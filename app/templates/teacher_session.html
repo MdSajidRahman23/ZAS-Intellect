@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Teacher / Session #{{ session.id }}</p>
+    <h1>{{ session.submission.student.name }}</h1>
+    <p class="muted">{{ session.submission.student.identifier }} · {{ session.submission.course_code }} · {{ session.submission.original_filename }}</p>
+  </div>
+  <div class="actions-row compact">
+    <a class="btn secondary" href="/teacher/session/{{ session.id }}/report.pdf">Download PDF</a>
+    <a class="btn secondary" href="/teacher">Back</a>
+  </div>
+</div>
+
+<div class="result-grid">
+  <section class="score-card {{ session.risk_flag|lower|replace(' ', '-') }}">
+    <span>ZAS-Score</span>
+    <strong>{{ '%.1f'|format(session.zas_score) }}</strong>
+    <em>{{ session.risk_flag }}</em>
+  </section>
+  <section class="panel">
+    <h2>Decision Support</h2>
+    <div class="metric-row"><span>Status</span><strong>{{ session.status|replace('_', ' ')|title }}</strong></div>
+    <div class="metric-row"><span>Viva Performance</span><strong>{{ '%.1f'|format(session.viva_performance) }}</strong></div>
+    <div class="metric-row"><span>Submission Quality</span><strong>{{ '%.1f'|format(session.submission_quality) }}</strong></div>
+    <div class="metric-row"><span>Live Proctor Risk</span><strong>{{ '%.1f'|format(session.live_proctor_risk) }}</strong></div>
+    <div class="metric-row"><span>AI Provider</span><strong>{{ session.ai_provider_used|upper }}</strong></div>
+    <div class="metric-row"><span>Adaptive Viva Logic</span><strong>Score-based difficulty</strong></div>
+    <p class="muted">{{ session.feedback_summary or 'Session is still in progress. Final decision support will appear after the student completes all viva questions.' }}</p>
+    <div class="metric-row"><span>Integrity Recommendation</span><strong>{{ integrity_recommendation }}</strong></div>
+  </section>
+</div>
+
+<section class="panel security-panel">
+  <h2>Secure Proctoring Evidence</h2>
+  <div class="security-grid">
+    <div><span>Completed Reason</span><strong>{{ session.completed_reason or 'In progress' }}</strong></div>
+    <div><span>Video Chunks</span><strong>{{ session.video_chunks|length }}</strong></div>
+    <div><span>Critical Events</span><strong>{{ session.proctor_events|selectattr('risk_weight', 'ge', 80)|list|length }}</strong></div>
+    <div><span>Total Events</span><strong>{{ session.proctor_events|length }}</strong></div>
+  </div>
+  <p class="muted small">Review fullscreen exits, tab/focus loss, face visibility, motion, and video evidence before taking final action.</p>
+</section>
+
+<section class="panel">
+  <h2>Video Recording Evidence</h2>
+  {% if session.video_chunks %}
+  <div class="video-grid">
+    {% for chunk in session.video_chunks|sort(attribute='chunk_index') %}
+      <div class="video-card">
+        <video controls preload="metadata" src="/teacher/session/{{ session.id }}/video/{{ chunk.id }}"></video>
+        <div class="qa-foot"><span>Chunk #{{ chunk.chunk_index }}</span><span>{{ (chunk.size_bytes / 1024)|round(1) }} KB</span><span>{{ chunk.created_at.strftime('%I:%M:%S %p') }}</span></div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="muted">No video chunks saved yet. In secure mode, the browser uploads evidence every {{ settings.video_chunk_seconds }} seconds.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>Teacher Decision Panel</h2>
+  <form method="post" action="/teacher/session/{{ session.id }}/decision" class="decision-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+    <label>Decision</label>
+    <select name="decision_status">
+      {% for d in decisions %}
+      <option value="{{ d }}" {% if session.decision_status == d %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+    <label>Teacher Note</label>
+    <textarea name="decision_note" rows="3" placeholder="Add short review note, physical viva schedule, or penalty decision.">{{ session.decision_note }}</textarea>
+    <button class="btn primary" type="submit">Save Decision</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Viva Transcript</h2>
+  {% for q in session.questions|sort(attribute='q_order') %}
+  <div class="qa-card">
+    <h3>Q{{ q.q_order }} · {{ q.category }} · {{ q.difficulty_label }}. {{ q.question }}</h3>
+    <p>{{ q.answer or 'No answer submitted yet.' }}</p>
+    <div class="qa-foot"><span>Official Score: {{ '%.1f'|format(q.answer_score) }}</span><span>Raw: {{ '%.1f'|format(q.raw_score or q.answer_score) }}</span><span>{{ q.feedback or 'Pending evaluation' }}</span><span>Provider: {{ q.ai_provider_used|upper }}</span></div>
+    <details><summary>Expected points and adaptive note</summary><p>{{ q.expected_points }}</p><p class="muted small">{{ q.adaptive_note }}</p><p class="muted small">Rubric: {{ q.rubric_json }}</p></details>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="panel">
+  <h2>Proctoring Events</h2>
+  <div class="event-list">
+    {% for e in session.proctor_events|sort(attribute='created_at') %}
+      <div><strong>{{ e.event_type }}</strong><span>{{ e.details }}<br><small>{{ e.created_at.strftime('%d %b %Y %I:%M:%S %p') }}</small></span><em>Risk +{{ e.risk_weight }}</em></div>
+    {% else %}
+      <p class="muted">No proctor events recorded.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

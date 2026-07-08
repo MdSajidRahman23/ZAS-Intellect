@@ -1,0 +1,19 @@
+ZAS-Intellect Adaptive Viva Hotfix
+
+What was fixed:
+- Submission flow now has a built-in fallback adaptive question generator.
+- If Grok/Gemini/network/local provider causes any issue, the viva will still start with offline adaptive questions.
+- Adaptive viva remains active: good answer -> harder next question, weak answer -> easier next question.
+- Tests verified: 14 passed.
+
+Run:
+1. Stop old server with Ctrl+C.
+2. Extract this ZIP fresh.
+3. Open PowerShell in zas_intellect_final_python.
+4. Run:
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\scripts\setup_windows.ps1
+   .\scripts\reset_db.ps1
+   .\scripts\start_windows.ps1
+
+If you still see 500, copy the red terminal error text and send it.

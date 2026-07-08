@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Viva / Result</p>
+    <h1>ZAS-Score Report</h1>
+    <p class="muted">Your viva transcript and scoring summary have been submitted to the course teacher.</p>
+  </div>
+  <div class="actions-row compact">
+    <a class="btn secondary" href="/student/result/{{ session.id }}/report.pdf">Download PDF</a>
+    <a class="btn secondary" href="/student">Back to Course</a>
+  </div>
+</div>
+
+<div class="result-grid">
+  <section class="score-card {{ session.risk_flag|lower|replace(' ', '-') }}">
+    <span>Final ZAS-Score</span>
+    <strong>{{ '%.1f'|format(session.zas_score) }}</strong>
+    <em>{{ session.risk_flag }}</em>
+  </section>
+  <section class="panel">
+    <h2>Breakdown</h2>
+    <div class="metric-row"><span>Viva Performance</span><strong>{{ '%.1f'|format(session.viva_performance) }}</strong></div>
+    <div class="metric-row"><span>Submission Quality</span><strong>{{ '%.1f'|format(session.submission_quality) }}</strong></div>
+    <div class="metric-row"><span>Proctor Risk</span><strong>{{ '%.1f'|format(session.proctor_risk) }}</strong></div>
+    <div class="metric-row"><span>AI Provider</span><strong>{{ session.ai_provider_used|upper }}</strong></div>
+    <div class="metric-row"><span>Adaptive Viva</span><strong>Enabled</strong></div>
+    <div class="metric-row"><span>Teacher Decision</span><strong>{{ session.decision_status }}</strong></div>
+    <p class="muted">{{ session.feedback_summary }}</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h2>Transcript</h2>
+  {% for q in session.questions|sort(attribute='q_order') %}
+  <div class="qa-card">
+    <h3>Q{{ q.q_order }} · {{ q.category }} · {{ q.difficulty_label }}. {{ q.question }}</h3>
+    <p>{{ q.answer or 'No answer submitted.' }}</p>
+    <div class="qa-foot"><span>Official Score: {{ '%.1f'|format(q.answer_score) }}</span><span>Raw: {{ '%.1f'|format(q.raw_score or q.answer_score) }}</span><span>{{ q.feedback }}</span><span>Provider: {{ q.ai_provider_used|upper }}</span></div>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

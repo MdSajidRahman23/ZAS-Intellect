@@ -1,0 +1,23 @@
+ZAS-Intellect Adaptive Viva Update Notes
+
+What changed:
+- Added adaptive question flow.
+- The first viva question starts at Standard level.
+- If raw answer score is 75 or above, the next question becomes harder.
+- If raw answer score is below 50, the next question becomes easier.
+- If raw score is between 50 and 74, the next question stays at the same level.
+- Official marking is difficulty-aware:
+  Foundation questions are capped lower.
+  Standard questions use normal marking.
+  Advanced questions can receive a small difficulty bonus.
+- Student result, teacher review, PDF report, and CSV export now show adaptive viva information.
+- Grok/Gemini/offline fallback is configured through AI_PROVIDER=auto.
+- Proctoring motion risk has been tuned to reduce false positives from normal movement.
+- Automated tests were updated/expanded and passed: 14 tests passed.
+
+Run:
+cd "D:\ZAS-Intellect\zas_intellect_final_python"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\scripts\setup_windows.ps1
+.\scripts\reset_db.ps1
+.\scripts\start_windows.ps1

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-card panel">
+  <div class="login-logo">ZAS</div>
+  <h1>ZAS-Intellect</h1>
+  <p class="muted">AI-driven viva and academic integrity layer for DIU BLC.</p>
+  {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+  <form method="post" action="/login" class="form-stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+    <label>Student ID / Teacher ID</label>
+    <input name="identifier" placeholder="0242220005101027" required autofocus>
+    <label>Password</label>
+    <input name="password" type="password" placeholder="••••••••" required>
+    <button class="btn primary" type="submit">Login to BLC</button>
+  </form>
+  {% if settings.demo_mode and settings.show_demo_credentials %}
+  <div class="demo-box">
+    <strong>Demo Login</strong>
+    <span>Student: 0242220005101027 / student123</span>
+    <span>Student: 0242220005101473 / student123</span>
+    <span>Teacher: CIS-TEACHER / teacher123</span>
+  </div>
+  {% endif %}
+  <p class="muted small">Production mode hides demo credentials and requires a custom secret key.</p>
+</div>
+{% endblock %}

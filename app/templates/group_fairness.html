@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Teacher / Group Fairness</p>
+    <h1>Group Code: {{ group_code }}</h1>
+    <p class="muted">Compare individual viva performance for the same group submission.</p>
+  </div>
+  <a class="btn secondary" href="/teacher">Back</a>
+</div>
+
+<section class="table-card">
+  <table>
+    <thead><tr><th>Student</th><th>Status</th><th>Viva</th><th>Submission</th><th>ZAS</th><th>Flag</th><th>Decision</th><th></th></tr></thead>
+    <tbody>
+    {% for s in sessions %}
+      <tr>
+        <td><strong>{{ s.submission.student.name }}</strong><br><span class="muted small">{{ s.submission.student.identifier }}</span></td>
+        <td>{{ s.status|replace('_', ' ')|title }}</td>
+        <td>{{ '%.1f'|format(s.viva_performance) }}</td>
+        <td>{{ '%.1f'|format(s.submission_quality) }}</td>
+        <td><strong>{{ '%.1f'|format(s.zas_score) }}</strong></td>
+        <td><span class="flag {{ s.risk_flag|lower|replace(' ', '-') }}">{{ s.risk_flag }}</span></td>
+        <td>{{ s.decision_status }}</td>
+        <td><a class="btn tiny" href="/teacher/session/{{ s.id }}">Review</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="empty">No sessions found for this group code.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

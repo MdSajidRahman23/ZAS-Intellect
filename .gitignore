@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+zas_intellect.db
+.env
+app/data/uploads/*
+!app/data/uploads/.gitkeep
+app/data/recordings/*
+!app/data/recordings/.gitkeep
+*.log
+.DS_Store
+Thumbs.db

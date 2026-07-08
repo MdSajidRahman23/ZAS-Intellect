@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Dashboard / My courses / CSE-AI-2026</p>
+    <h1>AI Project Competition 2026</h1>
+    <p class="muted">Submit your assignment and complete the timed ZAS-Intellect viva inside BLC.</p>
+  </div>
+  <a class="btn primary" href="/student/assignment">Open Assignment</a>
+</div>
+
+{% if msg %}
+  <div class="alert alert-success">{{ msg }}</div>
+{% endif %}
+
+<section class="course-hero">
+  <div>
+    <span class="badge">Active Assignment</span>
+    <h2>ZAS-Intellect Proposal / Code Submission</h2>
+    <p>Upload PDF, DOCX, TXT, or code file. The system generates targeted viva questions and locks each answer after submission.</p>
+  </div>
+  <div class="score-formula">
+    <span>ZAS-Score</span>
+    <strong>Viva × 0.6 + Submission × 0.4</strong>
+  </div>
+</section>
+
+<h2 class="section-title">Recent Viva Sessions</h2>
+<div class="table-card">
+  <table>
+    <thead><tr><th>ID</th><th>Assignment</th><th>Group</th><th>Status</th><th>ZAS</th><th>Flag</th><th>Started</th><th></th></tr></thead>
+    <tbody>
+    {% for s in sessions %}
+      <tr class="{% if s.status == 'in_progress' %}row-attention{% endif %}">
+        <td>#{{ s.id }}</td>
+        <td>{{ s.submission.assignment_title }}<br><span class="muted small">Provider: {{ s.ai_provider_used|upper }}</span></td>
+        <td>{{ s.submission.group_code or 'Individual' }}</td>
+        <td><span class="status {{ s.status|replace('_', '-') }}">{{ s.status|replace('_', ' ')|title }}</span></td>
+        <td>{{ '%.1f'|format(s.zas_score) }}</td>
+        <td><span class="flag {{ s.risk_flag|lower|replace(' ', '-') }}">{{ s.risk_flag }}</span></td>
+        <td>{{ s.started_at.strftime('%d %b %Y %I:%M %p') }}</td>
+        <td>
+          {% if s.status == 'in_progress' %}
+            <a class="btn tiny primary" href="/student/viva/{{ s.id }}">Continue Viva</a>
+          {% else %}
+            <a class="btn tiny" href="/student/result/{{ s.id }}">View Result</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="empty">No viva session yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

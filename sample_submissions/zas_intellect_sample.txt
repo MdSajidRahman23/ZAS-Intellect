@@ -1,0 +1,9 @@
+ZAS-Intellect is a multimodal AI-driven viva and academic integrity system for DIU. The problem is that many students use AI tools to write assignments without understanding the submitted content. Existing plagiarism tools mainly check similarity and cannot reliably detect Bangla-to-English translated AI-generated work.
+
+The solution is to embed ZAS-Intellect inside the DIU BLC assignment workflow. After a student submits a PDF, DOCX, text, or code file, the system extracts content and generates targeted viva questions. The student answers in Bangla or English through voice or text. The system evaluates conceptual understanding rather than grammar.
+
+The workflow begins when a student uploads a submission. The AI parses the document, identifies key concepts, and generates three to five questions. During the viva, webcam proctoring records events such as tab switching, webcam denial, and copy/paste attempts. Each answer is scored with a rubric that considers relevance, specificity, reasoning, and examples.
+
+The final ZAS-Score is calculated as Viva Performance multiplied by 0.6 plus Submission Quality multiplied by 0.4. A score below 50 is marked as High Discrepancy. Scores from 50 to 74 are Borderline Review, and scores from 75 to 100 are Passed unless proctoring events require review.
+
+The teacher dashboard shows student ID, assignment, submission quality, viva performance, proctor risk, final ZAS-Score, transcript, and feedback. This saves teacher time by focusing physical follow-up only on flagged students.

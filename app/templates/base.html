@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token(request) }}">
+  <title>{{ title or 'ZAS-Intellect | DIU BLC' }}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="top-strip">
+    <span>Daffodil International University</span>
+    <span>Blended Learning Center</span>
+    <span>AI Project Competition 2026</span>
+  </div>
+  <header class="blc-header">
+    <div class="brand-block">
+      <div class="diu-mark">DIU</div>
+      <div>
+        <div class="brand-title">Daffodil International University BLC</div>
+        <div class="brand-subtitle">ZAS-Intellect Academic Integrity Plugin · {{ settings.app_version }}</div>
+      </div>
+    </div>
+    {% if user %}
+    <nav class="user-nav">
+      <span class="user-pill">{{ user.name }} · {{ user.role|title }}</span>
+      <form method="post" action="/logout" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="nav-button" type="submit">Logout</button>
+      </form>
+    </nav>
+    {% endif %}
+  </header>
+  <div class="layout">
+    {% if user %}
+    <aside class="sidebar">
+      <div class="sidebar-title">Navigation</div>
+      {% if user.role == 'student' %}
+        <a href="/student">📘 My Course</a>
+        <a href="/student/assignment">⬆ Submit Assignment</a>
+      {% else %}
+        <a href="/teacher">📊 Teacher Dashboard</a>
+        <a href="/teacher?flag=needs_action">📝 Needs Action</a>
+        <a href="/teacher?flag=high">🚩 High Discrepancy</a>
+        <a href="/teacher?flag=in_progress">⏳ Live Viva</a>
+        <a href="/teacher/export.csv">⬇ Export CSV</a>
+      {% endif %}
+      <div class="sidebar-section">Course Block</div>
+      <span>CSE-AI-2026</span>
+      <span>AI Project Competition</span>
+      <span>Department of CSE</span>
+      <span>Smart Campus Initiative</span>
+      <div class="sidebar-section">AI Mode</div>
+      <span>{{ settings.ai_provider|upper }} provider</span>
+      {% if settings.ai_provider == 'auto' %}<span>Grok → Gemini → Offline</span>{% endif %}
+    </aside>
+    {% endif %}
+    <main class="content {% if not user %}content-centered{% endif %}">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

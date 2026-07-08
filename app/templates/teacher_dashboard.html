@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Teacher / Dashboard</p>
+    <h1>ZAS-Intellect Teacher Dashboard</h1>
+    <p class="muted">Review flagged submissions, live viva sessions, transcripts, teacher decisions, and proctoring risk signals.</p>
+  </div>
+  <div class="actions-row compact"><span class="user-pill">Scope: {{ teacher_scope|title }}</span><a class="btn primary" href="/teacher/export.csv">Export CSV</a></div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><span>Total Sessions</span><strong>{{ total }}</strong></div>
+  <div class="kpi danger"><span>High Discrepancy</span><strong>{{ high }}</strong></div>
+  <div class="kpi danger"><span>Security Violation</span><strong>{{ security }}</strong></div>
+  <div class="kpi warning"><span>Borderline</span><strong>{{ borderline }}</strong></div>
+  <div class="kpi"><span>Live Viva</span><strong>{{ in_progress }}</strong></div>
+  <div class="kpi"><span>Average ZAS</span><strong>{{ avg_zas }}</strong></div>
+</div>
+
+<section class="panel soft progress-since-proposal">
+  <div class="progress-head">
+    <div>
+      <p class="crumb">Competition Progress Update</p>
+      <h2>Current Progress Since Initial Proposal</h2>
+      <p class="muted small">The initial proposal focused on AI viva and ZAS-Score generation. The current working prototype extends the MVP with adaptive viva difficulty, secure-start verification, camera and microphone recording, fullscreen monitoring, violation logging, teacher evidence review, exportable reports, and Grok/Gemini/offline AI fallback support.</p>
+    </div>
+    <span class="badge">Demo Ready</span>
+  </div>
+
+  <div class="security-grid">
+    <div><span>AI Viva Engine</span><strong>Implemented</strong></div>
+    <div><span>Adaptive Difficulty</span><strong>Implemented</strong></div>
+    <div><span>ZAS-Score Formula</span><strong>Implemented</strong></div>
+    <div><span>Secure Start Gate</span><strong>Implemented</strong></div>
+    <div><span>Camera + Mic Recording</span><strong>Implemented</strong></div>
+    <div><span>Fullscreen Monitoring</span><strong>Implemented</strong></div>
+    <div><span>Violation Logging</span><strong>Implemented</strong></div>
+    <div><span>Teacher Dashboard</span><strong>Implemented</strong></div>
+    <div><span>PDF / CSV Reports</span><strong>Implemented</strong></div>
+  </div>
+
+  <p class="muted small progress-note"><strong>Update for reviewers:</strong> Since the proposal submission, ZAS-Intellect has moved from the planned concept stage to a working prototype that demonstrates the complete student viva flow, adaptive question flow, secure proctoring controls, teacher review workflow, evidence playback, and report/export features.</p>
+</section>
+
+{% if ai_status.recent_errors %}
+<section class="panel soft">
+  <h2>Provider Diagnostics</h2>
+  <p class="muted small">Online AI failures automatically fall back to the offline engine; these messages help during demo/debug.</p>
+  <div class="event-list">
+  {% for err in ai_status.recent_errors %}<div><strong>{{ err.provider|upper }}</strong><span>{{ err.time }} · {{ err.message }}</span><em>Fallback OK</em></div>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="panel filter-panel">
+  <form method="get" action="/teacher" class="filter-form">
+    <label>Search</label>
+    <input name="q" value="{{ search }}" placeholder="Student, ID, course, assignment, group">
+    <label>Filter</label>
+    <select name="flag">
+      <option value="all" {% if selected_flag == 'all' %}selected{% endif %}>All sessions</option>
+      <option value="needs_action" {% if selected_flag == 'needs_action' %}selected{% endif %}>Needs teacher action</option>
+      <option value="in_progress" {% if selected_flag == 'in_progress' %}selected{% endif %}>Live / In Progress</option>
+      <option value="completed" {% if selected_flag == 'completed' %}selected{% endif %}>Completed</option>
+      <option value="high" {% if selected_flag == 'high' %}selected{% endif %}>High Discrepancy</option>
+      <option value="borderline" {% if selected_flag == 'borderline' %}selected{% endif %}>Borderline Review</option>
+      <option value="proctor" {% if selected_flag == 'proctor' %}selected{% endif %}>Proctor Review</option>
+      <option value="security" {% if selected_flag == 'security' %}selected{% endif %}>Security Violation</option>
+      <option value="passed" {% if selected_flag == 'passed' %}selected{% endif %}>Passed</option>
+      <option value="pending" {% if selected_flag == 'pending' %}selected{% endif %}>Pending</option>
+    </select>
+    <button class="btn secondary" type="submit">Apply</button>
+    <a class="btn ghost" href="/teacher">Reset</a>
+  </form>
+</section>
+
+<section class="table-card">
+  <table>
+    <thead><tr><th>Student</th><th>Assignment</th><th>Group</th><th>Status</th><th>Submission</th><th>Viva</th><th>ZAS</th><th>Live Proctor</th><th>Flag</th><th>Decision</th><th></th></tr></thead>
+    <tbody>
+      {% for s in sessions %}
+      <tr class="{% if s.status == 'in_progress' %}row-attention{% endif %}">
+        <td><strong>{{ s.submission.student.name }}</strong><br><span class="muted small">{{ s.submission.student.identifier }}</span></td>
+        <td>{{ s.submission.assignment_title }}<br><span class="muted small">{{ s.submission.course_code }} · {{ s.ai_provider_used|upper }}</span></td>
+        <td>{% if s.submission.group_code %}<a href="/teacher/group?code={{ s.submission.group_code }}">{{ s.submission.group_code }}</a>{% else %}Individual{% endif %}</td>
+        <td><span class="status {{ s.status|replace('_', '-') }}">{{ s.status|replace('_', ' ')|title }}</span></td>
+        <td>{{ '%.1f'|format(s.submission_quality) }}</td>
+        <td>{{ '%.1f'|format(s.viva_performance) }}</td>
+        <td><strong>{{ '%.1f'|format(s.zas_score) }}</strong></td>
+        <td>{{ '%.1f'|format(s.live_proctor_risk) }}</td>
+        <td><span class="flag {{ s.risk_flag|lower|replace(' ', '-') }}">{{ s.risk_flag }}</span></td>
+        <td>{{ s.decision_status }}</td>
+        <td><a class="btn tiny" href="/teacher/session/{{ s.id }}">Review</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="11" class="empty">No sessions match this filter.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

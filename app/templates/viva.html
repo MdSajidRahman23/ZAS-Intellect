@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="secure-start-overlay" id="secureStartOverlay">
+  <div class="secure-card">
+    <div class="secure-badge">Secure Viva Mode</div>
+    <h1>Start Full-Screen AI Viva</h1>
+    <p>The official viva timer and question access start only after mandatory security checks pass. The viva is adaptive: strong answers unlock harder follow-up questions, while weak answers move to foundation-level questions.</p>
+    <ul>
+      <li><strong>Camera and microphone are required.</strong> Without both, the viva cannot start.</li>
+      <li>Full-screen is required. Pressing <strong>ESC</strong>, leaving full-screen, switching tab, or losing window focus will end the viva and flag it as possible external assistance.</li>
+      <li>Webcam + microphone evidence is recorded in {{ settings.video_chunk_seconds }} second chunks for teacher review.</li>
+      <li>The question area is locked until camera, microphone, recording, and full-screen checks pass.</li>
+      <li>Adaptive difficulty is used: if you answer well, the next question becomes harder; if you struggle, the next question becomes easier.</li>
+    </ul>
+    <label class="secure-consent"><input type="checkbox" id="secureConsent"> I understand and agree to secure full-screen proctoring with camera and microphone recording.</label>
+    <div class="permission-status info" id="permissionStatus">Step 1: tick consent. Step 2: click Start. Chrome/Edge should ask for Camera and Microphone permission.</div>
+    <button class="btn primary" id="startSecureBtn" type="button" disabled>Start Secure Viva</button>
+    <p class="muted small">Use http://127.0.0.1:8000 or http://localhost:8000. If Chrome/Edge already blocked camera/mic, click the lock/camera icon in the address bar and allow both. Browser security does not allow websites to physically lock ESC/full-screen, so ZAS-Intellect detects the exit and ends the exam with a critical flag.</p>
+  </div>
+</div>
+
+<div class="viva-shell secure-locked"
+     data-session-id="{{ session.id }}"
+     data-remaining-seconds="{{ remaining_seconds }}"
+     data-secure-started="{{ 1 if secure_started else 0 }}"
+     data-mediapipe-enabled="{{ 1 if settings.enable_mediapipe_proctoring else 0 }}"
+     data-secure-fullscreen="{{ 1 if settings.enable_secure_fullscreen else 0 }}"
+     data-end-on-fullscreen-exit="{{ 1 if settings.secure_mode_end_on_fullscreen_exit else 0 }}"
+     data-end-on-focus-loss="{{ 1 if settings.secure_mode_end_on_focus_loss else 0 }}"
+     data-video-recording="{{ 1 if settings.enable_video_recording else 0 }}"
+     data-video-chunk-seconds="{{ settings.video_chunk_seconds }}"
+     data-motion-enabled="{{ 1 if settings.motion_detection_enabled else 0 }}"
+     data-motion-interval-ms="{{ settings.motion_detection_interval_ms }}">
+  <section class="viva-main panel">
+    <div class="progress-line"><span id="vivaProgressFill" style="width: {{ ((answered) / total * 100)|round if total else 0 }}%"></span></div>
+    <div class="viva-topline">
+      <p class="crumb" id="vivaQuestionCrumb">Question {{ answered + 1 if question else answered }} of {{ total }}</p>
+      <div class="timer-pill" id="vivaTimer">{{ remaining_seconds if secure_started else 'Not started' }}</div>
+    </div>
+    <h1>AI Viva Session</h1>
+    <div class="secure-live-banner" id="secureLiveBanner">Secure mode not started yet. Questions are locked.</div>
+    {% if error %}<div class="alert alert-warning">{{ error }}</div>{% endif %}
+
+    <div class="locked-question-placeholder" id="lockedQuestionPlaceholder">
+      <h2>Question locked until secure start</h2>
+      <p>Allow camera + microphone, enter full-screen, and start recording to reveal the viva question and begin the timer.</p>
+    </div>
+
+    <div class="protected-viva-content" id="protectedVivaContent" aria-hidden="true">
+    {% if question %}
+      <div class="question-box">
+        <span id="questionMeta">{{ question.category }} question · Level: {{ question.difficulty_label }} · Provider: {{ question.ai_provider_used|upper }}</span>
+        <h2 id="questionText">{{ question.question }}</h2>
+        <p class="adaptive-hint" id="adaptiveHint">{{ question.adaptive_note or 'Adaptive viva question based on previous performance.' }}</p>
+      </div>
+      <form method="post" action="/student/viva/{{ session.id }}/answer" class="form-stack" id="answerForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}" id="questionIdInput">
+        <div class="alert alert-warning hidden" id="answerErrorBox"></div>
+        <label>Your Answer</label>
+        <textarea id="answerBox" name="answer" rows="8" placeholder="Explain in Bangla or English. Focus on logic, steps, and decisions." required disabled></textarea>
+        <div class="actions-row">
+          <div class="voice-tools">
+            <select id="voiceLanguage" aria-label="Voice input language" disabled>
+              <option value="bn-BD">Bangla voice</option>
+              <option value="en-US">English voice</option>
+              <option value="bn-BD">Mixed / Auto fallback</option>
+            </select>
+            <button class="btn secondary" type="button" id="voiceBtn" disabled>Start Voice Input</button>
+          </div>
+          <button class="btn primary secure-disabled" type="submit" disabled>Submit Answer</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="question-box">
+        <span>All questions answered</span>
+        <h2>Submit your final viva result.</h2>
+      </div>
+      <form method="post" action="/student/finish/{{ session.id }}" class="form-stack secure-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="btn primary secure-disabled" type="submit" disabled>Finish Viva Securely</button>
+      </form>
+    {% endif %}
+    </div>
+  </section>
+  <aside class="viva-side panel">
+    <h2>Proctoring</h2>
+    <div class="camera-preview-frame" id="cameraPreviewFrame">
+      <video id="webcam" autoplay muted playsinline></video>
+      <div class="camera-preview-overlay" id="cameraPreviewOverlay">
+        <span id="cameraPreviewBadge">Camera preview locked</span>
+        <small>Live camera feed appears here after permission is granted.</small>
+      </div>
+    </div>
+    <div class="proctor-status" id="proctorStatus">Waiting for secure start...</div>
+    <div class="mini-metrics">
+      <div><span>Submission Quality</span><strong>{{ '%.1f'|format(session.submission_quality) }}</strong></div>
+      <div><span>Time Left</span><strong id="miniTimer">{{ remaining_seconds if secure_started else 'Not started' }}</strong></div>
+      <div><span>Recording</span><strong id="recordingStatus">Off</strong></div>
+      <div><span>Motion</span><strong id="motionStatus">Standby</strong></div>
+    </div>
+    <p class="muted small">Full-screen exit, tab/window focus loss, video recording, face/gaze checks, frame-motion detection, copy/paste, right-click, and inactivity are logged for teacher review.</p>
+    <form method="post" action="/student/finish/{{ session.id }}" class="form-stack finish-box secure-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <button class="btn secondary secure-disabled" type="submit" disabled>Finish Viva</button>
+      <small>Allowed only after every question is answered, unless the timer expires.</small>
+    </form>
+  </aside>
+</div>
+{% if settings.enable_mediapipe_proctoring %}
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+{% endif %}
+<script src="/static/js/viva.js"></script>
+{% endblock %}

@@ -1,0 +1,24 @@
+ZAS-Intellect Adaptive Viva Demo Notes
+
+Recommended 4-minute video flow:
+1) 0:00-0:25 Intro: ZAS-Intellect is a multimodal AI viva and academic integrity system for DIU BLC.
+2) 0:25-0:55 Problem + solution: AI-generated assignments are hard to verify; this system checks real understanding through viva.
+3) 0:55-2:30 Student workflow: login, upload assignment, secure start, camera/mic/fullscreen/recording checks, answer viva questions.
+4) 2:30-3:25 Teacher workflow: dashboard, ZAS-Score, flags, transcript, evidence playback, PDF/CSV export.
+5) 3:25-4:00 Updates since proposal: show the dashboard panel named Current Progress Since Initial Proposal.
+
+Important line to say:
+Since the initial proposal, we improved the system from a basic AI viva concept into a working prototype with adaptive question difficulty, secure-start checks, camera and microphone recording, fullscreen monitoring, violation logging, teacher dashboard, evidence playback, PDF report, CSV export, and Grok/Gemini/offline AI fallback support.
+
+Adaptive viva line:
+The viva now adjusts difficulty after every answer. If the student answers well, the next question becomes harder. If the answer is weak, the next question becomes easier. The official score is adjusted according to the difficulty level.
+
+Demo defaults:
+AI_PROVIDER=auto
+STT_PROVIDER=browser
+VIVA_DURATION_MINUTES=5
+
+Demo login:
+Student: 0242220005101027 / student123
+Student: 0242220005101473 / student123
+Teacher: CIS-TEACHER / teacher123

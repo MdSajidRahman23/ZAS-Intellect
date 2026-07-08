@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="crumb">Course / Assignment / ZAS-Intellect</p>
+    <h1>Submit Assignment</h1>
+    <p class="muted">After submission, you will enter a secure-start screen. The official viva timer starts only after camera, microphone, recording, and full-screen checks pass.</p>
+  </div>
+  <div class="ai-chip">
+    <span>AI Provider</span>
+    <strong>{{ settings.ai_provider|upper }}</strong>
+  </div>
+</div>
+
+<div class="split-grid">
+  <section class="panel">
+    <h2>Upload Submission</h2>
+    {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+    <form method="post" action="/student/submit" enctype="multipart/form-data" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <label>Course Code</label>
+      <input name="course_code" value="CSE-AI-2026" required>
+      <label>Assignment Title</label>
+      <input name="assignment_title" value="AI Project Competition Proposal" required>
+      <label>Group Code <span class="muted">optional</span></label>
+      <input name="group_code" placeholder="Example: ZAS-GROUP-A">
+      <label class="checkbox-line"><input type="checkbox" name="is_group_submission" value="1"> This is a group submission; every member will take viva individually.</label>
+      <label>File</label>
+      <input type="file" name="file" accept=".pdf,.docx,.txt,.py,.js,.java,.cpp,.c,.html,.css,.md" required>
+      <small>Supported: PDF, DOCX, TXT, Markdown, and common code files. Image-only/scanned PDFs must contain selectable text. Max {{ settings.max_upload_mb }} MB.</small>
+      <div class="privacy-box">
+        <strong>AI processing notice</strong>
+        <p>For best viva quality, this system may send extracted submission text to the configured AI provider. If no API key is configured, it uses the local offline engine.</p>
+        <label class="checkbox-line"><input type="checkbox" name="consent_ai_processing" value="1" required> I understand and agree to start the AI viva.</label>
+      </div>
+      <button class="btn primary" type="submit">Submit and Open Secure Viva</button>
+    </form>
+  </section>
+  <section class="panel soft">
+    <h2>Viva Rules</h2>
+    <ul class="check-list">
+      <li>Answer in Bangla, English, or mixed language.</li>
+      <li>Viva timer is enforced server-side: {{ settings.viva_duration_minutes }} minutes.</li>
+      <li>Camera, microphone, recording, and full-screen mode are mandatory before the viva timer starts.</li>
+      <li>Do not switch tab, exit full-screen, copy, paste, or read from another screen.</li>
+      <li>Teacher sees ZAS-Score, transcript, proctor flags, and decision tools.</li>
+    </ul>
+    <div class="demo-box">
+      <strong>Provider status</strong>
+      <span>Grok ready: {{ 'Yes' if ai_status.grok_ready else 'No API key' }}</span>
+      <span>Gemini ready: {{ 'Yes' if ai_status.gemini_ready else 'No API key' }}</span>
+      <span>Offline engine: Ready</span>
+      <span>Server STT: {{ 'Ready' if ai_status.server_stt_ready else ai_status.stt_provider|upper }}</span>
+      {% if ai_status.recent_errors %}<hr><strong>Recent provider diagnostics</strong>{% for err in ai_status.recent_errors %}<span>{{ err.time }} · {{ err.provider|upper }} · {{ err.message }}</span>{% endfor %}{% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}
