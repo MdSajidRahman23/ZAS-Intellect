@@ -1,4 +1,13 @@
-﻿# ZAS-Intellect
+# ZAS-Intellect final formatting fix
+# Run from: D:\ZAS-Intellect
+
+if (!(Test-Path "app\main.py")) {
+    Write-Host "Run this from the ZAS-Intellect project root: D:\ZAS-Intellect" -ForegroundColor Red
+    exit 1
+}
+
+@'
+# ZAS-Intellect
 
 A competition-ready Python/FastAPI implementation of **ZAS-Intellect**: a multimodal AI-driven viva and academic integrity system for academic assessment.
 
@@ -218,3 +227,55 @@ Advanced: harder question, small bonus, official score capped at 100
 ```
 
 Teacher and student reports show both the raw examiner score and the official difficulty-adjusted score.
+'@ | Set-Content "README.md" -Encoding UTF8
+
+@'
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local environment
+.env
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# App data
+app/data/uploads/*
+!app/data/uploads/.gitkeep
+app/data/recordings/*
+!app/data/recordings/.gitkeep
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+'@ | Set-Content ".gitignore" -Encoding UTF8
+
+@'
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+SQLAlchemy==2.0.36
+Jinja2==3.1.4
+python-multipart==0.0.20
+itsdangerous==2.2.0
+pydantic-settings==2.7.1
+pypdf==5.1.0
+python-docx==1.1.2
+google-generativeai==0.8.3
+httpx==0.28.1
+reportlab==4.4.3
+alembic==1.14.0
+pytest==8.3.4
+psycopg[binary]
+'@ | Set-Content "requirements.txt" -Encoding UTF8
+
+Write-Host "Formatted README.md, .gitignore, and requirements.txt." -ForegroundColor Green
+Write-Host "Now run:" -ForegroundColor Cyan
+Write-Host "git status"
+Write-Host "git add README.md .gitignore requirements.txt"
+Write-Host 'git commit -m "Fix repository file formatting"'
+Write-Host "git push"
