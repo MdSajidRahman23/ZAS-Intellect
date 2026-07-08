@@ -2,16 +2,22 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-zas_intellect.db
+
+# Local environment
 .env
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# App data
 app/data/uploads/*
 !app/data/uploads/.gitkeep
 app/data/recordings/*
 !app/data/recordings/.gitkeep
+
+# Logs and OS files
 *.log
 .DS_Store
 Thumbs.db
-
-*.db
-*.sqlite
-*.sqlite3

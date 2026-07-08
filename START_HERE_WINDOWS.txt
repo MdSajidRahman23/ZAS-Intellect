@@ -1,49 +1,77 @@
 ZAS-Intellect Adaptive Viva Demo - Windows Quick Start
 
-1) Extract the ZIP here:
+1) Keep or extract the project here:
+
    D:\ZAS-Intellect
 
 2) Open PowerShell and run:
 
-   cd "D:\ZAS-Intellect\zas_intellect_final_python"
+   cd "D:\ZAS-Intellect"
    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
    .\scripts\setup_windows.ps1
    .\scripts\reset_db.ps1
    .\scripts\start_windows.ps1
 
 3) Open browser:
+
    http://127.0.0.1:8000
 
 4) Demo login:
+
    Student: 0242220005101027 / student123
    Student: 0242220005101473 / student123
    Teacher: CIS-TEACHER / teacher123
 
 5) Adaptive viva behavior:
+
    The first question starts at Standard level.
    If the student answers well, the next question becomes Advanced.
    If the student answers poorly, the next question becomes Foundation level.
-   Official marks are difficulty-aware: easier questions are capped lower, advanced questions can receive a small bonus.
+
+   Official marks are difficulty-aware:
+   - easier questions are capped lower
+   - advanced questions can receive a small bonus
 
 6) Secure proctoring:
-   Viva timer and question access start only after Start Secure Viva passes camera + microphone + recording + full-screen checks.
-   Camera and microphone are mandatory. Without both, the viva cannot start.
+
+   Viva timer and question access start only after Start Secure Viva passes:
+   - camera check
+   - microphone check
+   - recording check
+   - full-screen check
+
+   Camera and microphone are mandatory.
+   Without both, the viva cannot start.
+
    Full-screen exit / ESC / tab hide / focus loss ends the viva and flags Security Violation.
-   Video evidence is saved under app\data\recordings.
+   Video evidence is saved under:
+
+   app\data\recordings
 
 7) Grok/xAI:
+
    This build uses AI_PROVIDER=auto.
    If XAI_API_KEY is empty, the system automatically uses offline fallback.
+
    To enable Grok, open .env and set:
+
    XAI_API_KEY=your_xai_api_key_here
    XAI_MODEL=grok-4.3
 
 8) If anything breaks, reset database:
+
    .\scripts\reset_db.ps1
 
 PowerShell note:
-Use: cd "D:\ZAS-Intellect\zas_intellect_final_python"
-Do NOT use: cd /d ...  (that is a CMD command, not PowerShell)
+
+   Use:
+   cd "D:\ZAS-Intellect"
+
+   Do NOT use:
+   cd /d ...
+
+   cd /d is a CMD command, not a PowerShell command.
 
 Fastest run after extraction:
-Double-click RUN_ME_WINDOWS.bat
+
+   Double-click RUN_ME_WINDOWS.bat
