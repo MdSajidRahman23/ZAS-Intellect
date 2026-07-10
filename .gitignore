@@ -21,3 +21,13 @@ app/data/recordings/*
 *.log
 .DS_Store
 Thumbs.db
+
+.env
+
+.venv/
+
+__pycache__/
+
+*.pyc
+
+zas_intellect.db
