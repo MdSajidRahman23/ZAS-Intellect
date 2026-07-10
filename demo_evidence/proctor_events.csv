@@ -1,0 +1,43 @@
+id,session_id,event_type,details,risk_weight,created_at
+1,1,webcam_started,Webcam permission granted,0.0,2026-07-09 18:09:49.499337
+2,1,audio_capture_started,Microphone capture started for video evidence,0.0,2026-07-09 18:09:49.507593
+3,1,fullscreen_entered,Student entered full-screen secure viva mode,0.0,2026-07-09 18:09:49.531343
+4,1,recording_started,Webcam/microphone recording started for viva evidence,0.0,2026-07-09 18:09:49.541983
+5,1,secure_mode_started,"Mandatory camera, microphone, recording, and full-screen checks passed. Official viva timer started.",0.0,2026-07-09 18:09:49.550069
+6,1,face_visible,MediaPipe face proctoring initialized,0.0,2026-07-09 18:09:49.557555
+7,1,recording_chunk_saved,Saved video evidence chunk #0 (234630 bytes).,0.0,2026-07-09 18:09:59.557782
+8,1,recording_chunk_saved,Saved video evidence chunk #2 (1344 bytes).,0.0,2026-07-09 18:10:07.033644
+9,1,recording_chunk_saved,Saved video evidence chunk #1 (163361 bytes).,0.0,2026-07-09 18:10:07.041726
+10,1,fullscreen_exit,Full-screen state changed; no full-screen element remains.,100.0,2026-07-09 18:10:07.052888
+11,2,webcam_started,Webcam permission granted,0.0,2026-07-09 18:14:57.604786
+12,2,audio_capture_started,Microphone capture started for video evidence,0.0,2026-07-09 18:14:57.611432
+13,2,fullscreen_entered,Student entered full-screen secure viva mode,0.0,2026-07-09 18:14:57.629799
+14,2,recording_started,Webcam/microphone recording started for viva evidence,0.0,2026-07-09 18:14:57.641891
+15,2,secure_mode_started,"Mandatory camera, microphone, recording, and full-screen checks passed. Official viva timer started.",0.0,2026-07-09 18:14:57.650891
+16,2,face_visible,MediaPipe face proctoring initialized,0.0,2026-07-09 18:14:57.658887
+17,2,recording_chunk_saved,Saved video evidence chunk #0 (233337 bytes).,0.0,2026-07-09 18:15:07.657259
+18,2,recording_chunk_saved,Saved video evidence chunk #1 (227630 bytes).,0.0,2026-07-09 18:15:17.677422
+19,2,recording_chunk_saved,Saved video evidence chunk #2 (12321 bytes).,0.0,2026-07-09 18:15:18.250477
+20,2,recording_chunk_saved,Saved video evidence chunk #3 (1344 bytes).,0.0,2026-07-09 18:15:18.256812
+21,2,tab_hidden,Student left viva tab,12.0,2026-07-09 18:15:18.275947
+22,2,webcam_started,Webcam permission granted,0.0,2026-07-09 18:15:36.437610
+23,2,audio_capture_started,Microphone capture started for video evidence,0.0,2026-07-09 18:15:36.444439
+24,2,fullscreen_entered,Student entered full-screen secure viva mode,0.0,2026-07-09 18:15:36.463272
+25,2,recording_started,Webcam/microphone recording started for viva evidence,0.0,2026-07-09 18:15:36.472289
+26,2,secure_mode_resumed,Student reconnected secure camera/microphone/full-screen controls for the active viva.,1.0,2026-07-09 18:15:36.655157
+27,2,face_visible,MediaPipe face proctoring initialized,0.0,2026-07-09 18:15:36.662348
+28,2,recording_chunk_saved,Saved video evidence chunk #0 (236936 bytes).,0.0,2026-07-09 18:15:46.497494
+29,2,recording_chunk_saved,Saved video evidence chunk #1 (227252 bytes).,0.0,2026-07-09 18:15:56.514535
+30,2,long_stillness,Very low webcam motion for an extended period,4.0,2026-07-09 18:15:59.179696
+31,2,recording_chunk_saved,Saved video evidence chunk #2 (84506 bytes).,0.0,2026-07-09 18:16:00.094231
+32,2,recording_chunk_saved,Saved video evidence chunk #3 (1344 bytes).,0.0,2026-07-09 18:16:00.100210
+33,2,tab_hidden,Student left viva tab,12.0,2026-07-09 18:16:00.116738
+34,2,timer_expired_server,Server-side timer expired and finalized the viva automatically.,0.0,2026-07-09 18:20:25.984121
+35,5,webcam_started,Webcam permission granted,0.0,2026-07-09 18:29:11.353939
+36,5,audio_capture_started,Microphone capture started for video evidence,0.0,2026-07-09 18:29:11.362218
+37,5,fullscreen_entered,Student entered full-screen secure viva mode,0.0,2026-07-09 18:29:11.379511
+38,5,recording_started,Webcam/microphone recording started for viva evidence,0.0,2026-07-09 18:29:11.387377
+39,5,secure_mode_started,"Mandatory camera, microphone, recording, and full-screen checks passed. Official viva timer started.",0.0,2026-07-09 18:29:11.396502
+40,5,face_visible,MediaPipe face proctoring initialized,0.0,2026-07-09 18:29:11.406687
+41,5,recording_chunk_saved,Saved video evidence chunk #0 (94565 bytes).,0.0,2026-07-09 18:29:15.673528
+42,5,recording_chunk_saved,Saved video evidence chunk #1 (1288 bytes).,0.0,2026-07-09 18:29:15.680731
